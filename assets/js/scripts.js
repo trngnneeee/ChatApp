@@ -41,7 +41,21 @@ onAuthStateChanged(auth, (user) => {
         registerButton.style.display = "block";
         logoutButton.style.display = "none";
         if (chatApp) {
-            chatApp.innerHTML = `<div style = "text-align: center">Vui lòng đăng nhập để sử dụng!</div>`
+            // chatApp.innerHTML = `<div style = "text-align: center">Vui lòng đăng nhập để sử dụng!</div>`
+            chatApp.innerHTML = ``
+            Swal.fire({
+                title: "Thông báo",
+                text: "Vui lòng đăng nhập để sử dụng",
+                icon: "info",
+                // showCancelButton: true,
+                confirmButtonColor: "rgb(28, 177, 28)",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Đăng nhập"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "login.html";
+                }
+            });
         }
     }
 });
@@ -65,7 +79,15 @@ if (formRegister) {
                         set(ref(db, `users/${user.uid}`), {
                             fullName: fullName
                         }).then(() => {
-                            window.location.href = "index.html";
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Đăng ký thành công",
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.href = "index.html";
+                            });
                         });
                     }
                 })
@@ -89,7 +111,15 @@ if (formLogin) {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                window.location.href = "index.html";
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Đăng nhập thành công",
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href = "index.html";
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -102,7 +132,15 @@ if (formLogin) {
 if (logoutButton) {
     logoutButton.addEventListener("click", () => {
         signOut(auth).then(() => {
-            window.location.href = "login.html";
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Đăng xuất thành công",
+                showConfirmButton: false,
+                timer: 2000
+            }).then(() => {
+                window.location.href = "login.html";
+            });
         }).catch((error) => {
             console.log(error);
         });
@@ -143,8 +181,7 @@ if (chatBody) {
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const tmpName = snapshot.val().fullName;
-                if (userID != currentUserID)
-                {
+                if (userID != currentUserID) {
                     newChat.classList.add("chat__incoming");
                     newChat.innerHTML = `
                         <div class="chat__name">
@@ -155,8 +192,7 @@ if (chatBody) {
                         </div>
                     `;
                 }
-                else
-                {
+                else {
                     newChat.classList.add("chat__outgoing");
                     newChat.innerHTML = `
                         <div class="chat__content">
@@ -172,16 +208,35 @@ if (chatBody) {
 
                 // Remove Message
                 const removeButton = newChat.querySelector(".chat__button-delete");
-                if (removeButton)
-                {
+                if (removeButton) {
                     removeButton.addEventListener("click", () => {
-                        remove(ref(db, 'chats/' + key)).then(() => {
-                            // chatBody.removeChild(newChat);
-                            /*
-                                Nếu remove ở đây thì một mình currentUser thấy còn mấy kia không thấy được, dùng hàm onChildRemove sẽ trả data về là 1 ID, dùng ID đó để xóa
-                            */
-                        })
-                    })
+                        Swal.fire({
+                            title: "Xác nhận xóa?",
+                            text: "Tin nhắn này sẽ bị xóa khỏi khung chat!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Xác nhận",
+                            cancelButtonText: "Hủy",
+                            showCloseButton: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                remove(ref(db, 'chats/' + key)).then(() => {
+                                    // chatBody.removeChild(newChat);
+                                    /*
+                                        Nếu remove ở đây thì một mình currentUser thấy còn mấy kia không thấy được, dùng hàm onChildRemove sẽ trả data về là 1 ID, dùng ID đó để xóa
+                                    */
+                                    Swal.fire({
+                                        title: "Đã xóa",
+                                        text: "Tin nhắn đã được xóa.",
+                                        icon: "success",
+                                        showCloseButton: true
+                                    });
+                                });
+                            }
+                        });
+                    });
                 }
                 // End Remove Message
 
@@ -199,8 +254,7 @@ if (chatBody) {
 onChildRemoved(chatRef, (data) => {
     const key = data.key;
     const chatItem = chatBody.querySelector(`[chat-key="${key}"]`);
-    if (chatItem)
-    {
+    if (chatItem) {
         chatItem.remove();
     }
 });
