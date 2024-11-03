@@ -95,10 +95,40 @@ if (formRegister) {
                     console.log(error);
                 });
         }
+        else
+        {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Vui lòng nhập đầy đủ thông tin",
+            });
+        }
     })
 }
 // End Register
 // ------------------------------------------------------------------------------
+// Other login (Comming soon)
+const loginOption = document.querySelectorAll("[option]");
+if (loginOption)
+{
+    loginOption.forEach((item) => {
+        item.addEventListener("click", () => {
+            Swal.fire({
+                title: "Coming soon!",
+                width: 600,
+                padding: "3em",
+                color: "#716add",
+                backdrop: `
+                  rgba(0,0,123,0.4)
+                  url("https://3.bp.blogspot.com/-fm0Cg5WFsy8/WF6YWJyUvuI/AAAAAAAFof0/nRsq3JLfwNwPqZA20fPDFAH8aOUFLH7nACLcB/s1600/AW356234_04.gif")
+                  left top
+                  no-repeat
+                `
+              });
+        })
+    })
+}
+// End Other login
 // Login
 const formLogin = document.querySelector(".form-login");
 if (formLogin) {
@@ -108,7 +138,17 @@ if (formLogin) {
         const email = formLogin.email.value;
         const password = formLogin.password.value;
 
-        signInWithEmailAndPassword(auth, email, password)
+        if (!email || !password)
+        {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Vui lòng nhập đầy đủ thông tin",
+            });
+        }
+        else
+        {
+            signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 Swal.fire({
@@ -120,10 +160,16 @@ if (formLogin) {
                 }).then(() => {
                     window.location.href = "index.html";
                 });
-            })
-            .catch((error) => {
-                console.log(error);
+            }).catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Thông tin đăng nhập sai!",
+                }).then(() => {
+                    window.location.href = "login.html";
+                });
             });
+        }
     })
 }
 // End Login
@@ -259,3 +305,4 @@ onChildRemoved(chatRef, (data) => {
     }
 });
 // End Check whether a message is delete
+// ------------------------------------------------------------------------------
