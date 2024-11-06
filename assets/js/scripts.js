@@ -1,3 +1,5 @@
+import * as Popper from 'https://cdn.jsdelivr.net/npm/@popperjs/core@^2/dist/esm/index.js'
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -95,8 +97,7 @@ if (formRegister) {
                     console.log(error);
                 });
         }
-        else
-        {
+        else {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
@@ -109,8 +110,7 @@ if (formRegister) {
 // ------------------------------------------------------------------------------
 // Other login (Comming soon)
 const loginOption = document.querySelectorAll("[option]");
-if (loginOption)
-{
+if (loginOption) {
     loginOption.forEach((item) => {
         item.addEventListener("click", () => {
             Swal.fire({
@@ -123,8 +123,9 @@ if (loginOption)
                   url("https://3.bp.blogspot.com/-fm0Cg5WFsy8/WF6YWJyUvuI/AAAAAAAFof0/nRsq3JLfwNwPqZA20fPDFAH8aOUFLH7nACLcB/s1600/AW356234_04.gif")
                   left top
                   no-repeat
-                `
-              });
+                `,
+                timer: 5000
+            });
         })
     })
 }
@@ -138,37 +139,36 @@ if (formLogin) {
         const email = formLogin.email.value;
         const password = formLogin.password.value;
 
-        if (!email || !password)
-        {
+        if (!email || !password) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Vui lòng nhập đầy đủ thông tin",
+                timer: 3000
             });
         }
-        else
-        {
+        else {
             signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Đăng nhập thành công",
-                    showConfirmButton: false,
-                    timer: 2000
-                }).then(() => {
-                    window.location.href = "index.html";
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Đăng nhập thành công",
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = "index.html";
+                    });
+                }).catch((error) => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Thông tin đăng nhập sai!",
+                    }).then(() => {
+                        window.location.href = "login.html";
+                    });
                 });
-            }).catch((error) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Thông tin đăng nhập sai!",
-                }).then(() => {
-                    window.location.href = "login.html";
-                });
-            });
         }
     })
 }
@@ -197,17 +197,51 @@ if (logoutButton) {
 // Form chat
 const formChat = document.querySelector("[chat] .chat__input");
 if (formChat) {
-    formChat.addEventListener("submit", (event) => {
+    // Preview Image
+    const upload = new FileUploadWithPreview.FileUploadWithPreview('upload-images', {
+        maxFileCount: 6,
+        multiple: true
+    });
+    // End Preview Image
+
+    formChat.addEventListener("submit", async (event) => {
         event.preventDefault();
         const content = formChat.content.value;
         const userID = auth.currentUser.uid;
+        const images = upload.cachedFileArray || [];
+        // Hình ảnh lưu trên Firebase là đường link của hình ảnh đó lưu trong Cloudinary
 
-        if (content && userID) {
+        if ((content || images.length) && userID) {
+            var imagesLink = [];
+            
+            const url = 'https://api.cloudinary.com/v1_1/dnqinxiwo/image/upload';
+            const formData = new FormData();
+
+            for (let i = 0; i < images.length; i++) {
+                let file = images[i];
+                formData.append('file', file);
+                formData.append('upload_preset', 'pd7np6db');
+    
+                await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        imagesLink.push(data.url)
+                    });
+            }
+
             set(push(ref(db, `chats`)), {
                 content: content,
-                userID: userID
+                userID: userID,
+                images: imagesLink
             });
+
             formChat.content.value = "";
+            upload.resetPreviewPanel();
         }
     })
 }
@@ -220,6 +254,7 @@ if (chatBody) {
         const key = data.key;
         const content = data.val().content;
         const userID = data.val().userID;
+        const imageLink = data.val().images;
 
         const newChat = document.createElement("div");
         newChat.setAttribute("chat-key", key);
@@ -227,28 +262,88 @@ if (chatBody) {
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const tmpName = snapshot.val().fullName;
-                if (userID != currentUserID) {
+
+                var HTMLname = `
+                    <div class="chat__name">
+                        ${tmpName}
+                    </div>
+                `;
+
+                var HTMLcontent = ``;
+                if (content)
+                {
+                    var HTMLcontent = `
+                        <div class="chat__content">
+                            ${content}
+                        </div>
+                    `;
+                }
+
+                var HTMLdelete = `
+                    <a class="chat__button-delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                `
+
+                var HTMLimage = ``;
+                if (imageLink && imageLink.length > 0)
+                {
+                    HTMLimage += `<div class="chat__images">` 
+                    imageLink.forEach((item) => {
+                        HTMLimage += `
+                            <img src = "${item}" />
+                        `
+                    });
+                    HTMLimage += `</div>`;
+                }
+                console.log(HTMLimage);
+
+                // if (userID != currentUserID) {
+                //     newChat.classList.add("chat__incoming");
+                //     newChat.innerHTML = `
+                //         <div class="chat__name">
+                //             ${tmpName}
+                //         </div>
+                //         <div class="chat__content">
+                //             ${content}
+                //         </div>
+                //     `;
+                // }
+                // else {
+                //     newChat.classList.add("chat__outgoing");
+                //     newChat.innerHTML = `
+                //         <div class="chat__content">
+                //             ${content}
+                //         </div>
+                //         <a class="chat__button-delete">
+                //             <i class="fa-solid fa-trash"></i>
+                //         </a>
+                //     `;
+                // }
+
+                if (userID != currentUserID)
+                {
                     newChat.classList.add("chat__incoming");
                     newChat.innerHTML = `
-                        <div class="chat__name">
-                            ${tmpName}
-                        </div>
-                        <div class="chat__content">
-                            ${content}
+                        <div>
+                            ${HTMLname}
+                            ${HTMLcontent}
+                            ${HTMLimage}
                         </div>
                     `;
                 }
-                else {
+                else{
                     newChat.classList.add("chat__outgoing");
                     newChat.innerHTML = `
-                        <div class="chat__content">
-                            ${content}
-                        </div>
-                        <a class="chat__button-delete">
-                            <i class="fa-solid fa-trash"></i>
-                        </a>
+                        <div>
+                            ${HTMLcontent}
+                            ${HTMLimage}
+                            ${HTMLdelete}
+                        </div>                   
                     `;
                 }
+
+
                 chatBody.appendChild(newChat);
                 chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -277,7 +372,8 @@ if (chatBody) {
                                         title: "Đã xóa",
                                         text: "Tin nhắn đã được xóa.",
                                         icon: "success",
-                                        showCloseButton: true
+                                        showCloseButton: true,
+                                        timer: 3000
                                     });
                                 });
                             }
@@ -306,3 +402,29 @@ onChildRemoved(chatRef, (data) => {
 });
 // End Check whether a message is delete
 // ------------------------------------------------------------------------------
+// Add Icon Picker
+const emojiPicker = document.querySelector('emoji-picker');
+if (emojiPicker) {
+    const button = document.querySelector(".emoji-picker__button");
+    const buttonIcon = document.querySelector(".emoji-picker__button i")
+    const tooltip = document.querySelector(".tooltip");
+    Popper.createPopper(button, tooltip)
+    emojiPicker.addEventListener('emoji-click', event => {
+        const icon = event.detail.unicode;
+        if (formChat) {
+            formChat.content.value += icon;
+        }
+    });
+
+    button.onclick = () => {
+        tooltip.classList.toggle('shown')
+    }
+
+    document.addEventListener("click", (event) => {
+        if (!emojiPicker.contains(event.target) && (event.target != button && event.target != buttonIcon)) {
+            tooltip.classList.remove('shown');
+        }
+    })
+}
+// End Add Icon Picker
+

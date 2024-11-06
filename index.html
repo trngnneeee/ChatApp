@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> 
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/file-upload-with-preview/6.1.2/style.min.css"
+    />
     <title>Ứng dụng chat</title>
 </head>
 <body>
@@ -27,13 +32,25 @@
 
             <form class="chat__input">
                 <input type = "text" placeholder="Nhập nội dung..." name = "content" autocomplete="off">
-                <button class="chat__send">
+                <span class = "button emoji-picker__button">
+                    <i class="fa-solid fa-icons"></i>
+                </span>
+                <label for = "file-upload-with-preview-upload-images" class = "button chat__image-button">
+                    <i class="fa-solid fa-image"></i>
+                </label>
+                <button class="button chat__send">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
+            <div class="tooltip" role="tooltip">
+                <emoji-picker class = "emoji-picker__menu"></emoji-picker>
+            </div>
+            <div class="custom-file-container" data-upload-id="upload-images"></div>
         </div>
     </div>
 
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-upload-with-preview/6.1.2/index.iife.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src = "assets/js/scripts.js"></script>
 </body>

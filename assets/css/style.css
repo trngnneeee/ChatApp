@@ -17,6 +17,10 @@ a{
     margin-top: 50px;
 }
 
+.chat{
+    position: relative;
+}
+
 @media (max-width: 575.98px)
 {
     .chat-app{
@@ -118,7 +122,7 @@ a{
     font-size: 14px;
     border-radius: 20px;
     background-color: palevioletred;
-    width: calc((100% - 20px) / 2);
+    width: auto;
     display: flex;
     flex-wrap: wrap;
     padding: 10px;
@@ -183,6 +187,17 @@ a{
 
 .chat__input .chat__send:hover{
     background-color: rgb(215, 71, 119);
+}
+
+@media (max-width: 575.98px)
+{
+    .chat__input{
+        gap: 5px;
+    }
+
+    .chat__input input{
+        width: 100px;
+    }
 }
 /* End Chat Body */
 /* ------------------------------------------------------------------ */
@@ -306,3 +321,78 @@ a{
     background-color: #313030;
 }
 /* End Register + Login */
+/* ------------------------------------------------------------------ */
+/* Emoji */
+.emoji-picker__button{
+    border: 2px solid palevioletred;
+    border-radius: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: palevioletred;
+}
+
+.tooltip{
+    position: absolute !important;
+    transform: translate3d(0px, 0px, 0px) !important;
+    top: 30px !important;
+    left: 60% !important;
+}
+
+.tooltip{
+    display: none;
+}
+
+.tooltip.shown{
+    display: block;
+}
+/* End Emoji */
+/* ------------------------------------------------------------------ */
+/* Image Button */
+.chat__image-button{
+    border: 2px solid palevioletred;
+    border-radius: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: palevioletred;
+}
+
+.chat .custom-file-container .label-container{
+    display: none;
+}
+
+.chat .custom-file-container .input-container{
+    display: none;
+}
+
+.chat .custom-file-container .image-preview{
+    height: auto;
+    padding: 0;
+    background: transparent !important;
+    border: 1px solid #ddd;
+}
+/* End Image Button */
+/* ------------------------------------------------------------------ */
+/* Images */
+.chat__images{
+    display: flex;
+    gap: 5px;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.chat__images .chat__incoming{
+    flex-direction: start;
+}
+
+.chat__images .chat__outgoing{
+    flex-direction: end;
+}
+
+.chat__images img{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+/* End Images */
