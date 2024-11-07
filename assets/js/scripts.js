@@ -296,30 +296,6 @@ if (chatBody) {
                     });
                     HTMLimage += `</div>`;
                 }
-                console.log(HTMLimage);
-
-                // if (userID != currentUserID) {
-                //     newChat.classList.add("chat__incoming");
-                //     newChat.innerHTML = `
-                //         <div class="chat__name">
-                //             ${tmpName}
-                //         </div>
-                //         <div class="chat__content">
-                //             ${content}
-                //         </div>
-                //     `;
-                // }
-                // else {
-                //     newChat.classList.add("chat__outgoing");
-                //     newChat.innerHTML = `
-                //         <div class="chat__content">
-                //             ${content}
-                //         </div>
-                //         <a class="chat__button-delete">
-                //             <i class="fa-solid fa-trash"></i>
-                //         </a>
-                //     `;
-                // }
 
                 if (userID != currentUserID)
                 {
@@ -382,6 +358,9 @@ if (chatBody) {
                 }
                 // End Remove Message
 
+                // Zoom Picture
+                new Viewer(newChat);
+                // End Zoom Picture
             } else {
                 console.log("No data available");
             }

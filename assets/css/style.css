@@ -106,8 +106,8 @@ a{
 @media (max-width: 575.98px)
 {
     .chat .chat__body .chat__incoming .chat__content{
-        font-size: 12px;
-        width: calc((100% - 50px) / 2);
+        font-size: 10px;
+        width: 50%;
     }
 }
 
@@ -132,7 +132,7 @@ a{
 {
     .chat .chat__body .chat__outgoing .chat__content{
         font-size: 12px;
-        width: calc((100% - 50px) / 2);
+        width: 80%;
     }
 }
 
